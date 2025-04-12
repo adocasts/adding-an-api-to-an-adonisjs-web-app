@@ -9,8 +9,15 @@ import Difficulty from './difficulty.js'
 import Status from './status.js'
 import OrganizationInvite from './organization_invite.js'
 import User from './user.js'
+import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 
 export default class Organization extends BaseModel {
+  static accessTokens = DbAccessTokensProvider.forModel(Organization, {
+    table: 'api_access_tokens',
+    type: 'api_token',
+    prefix: 'api_'
+  })
+
   @column({ isPrimary: true })
   declare id: number
 

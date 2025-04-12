@@ -64,7 +64,7 @@ export default class OrganizationsController {
     const data = await request.validateUsing(organizationValidator)
 
     await UpdateOrganization.handle({
-      user: auth.user!,
+      user: auth.use('web').user!,
       id: params.id,
       data,
     })
@@ -122,7 +122,7 @@ export default class OrganizationsController {
     }
 
     const organization = await DestroyOrganization.handle({
-      user: auth.user!,
+      user: auth.use('web').user!,
       id: params.id,
     })
 

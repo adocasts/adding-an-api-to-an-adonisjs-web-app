@@ -28,7 +28,7 @@ router.group(() => {
   router.get('/organizations/:id', [OrganizationsController, 'active']).as('organizations.active')
   router.delete('/organizations/:id', [OrganizationsController, 'destroy']).as('organizations.destroy')
 
-}).use(middleware.auth())
+}).use(middleware.auth({ guards: ['web'] }))
 
 router.group(() => {
 
@@ -90,4 +90,4 @@ router.group(() => {
   router.delete('/settings/organization/invite/:id', [SettingsOrganizationsController, 'cancelInvite']).as('settings.organization.invite.cancel')
   router.delete('/settings/organization/user/:id', [SettingsOrganizationsController, 'removeUser']).as('settings.organization.user.remove')
 
-}).use([middleware.auth(), middleware.organization()])
+}).use([middleware.auth({ guards: ['web'] }), middleware.organization()])

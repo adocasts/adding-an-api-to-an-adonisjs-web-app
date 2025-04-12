@@ -13,6 +13,12 @@ export default class OrganizationMiddleware {
   constructor(protected getActiveOrganization: GetActiveOrganization) {}
 
   async handle(ctx: HttpContext, next: NextFn) {
+    if (ctx.auth.use('api').user) {
+      ctx.organization = ctx.auth.use('api').user!
+      ctx.organizationId = ctx.organization.id
+      return next()
+    }
+
     const user = ctx.auth.use('web').user!
 
     try {

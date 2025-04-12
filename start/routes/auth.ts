@@ -12,7 +12,7 @@ import router from '@adonisjs/core/services/router'
 
 router.get('/register', [RegisterController, 'show']).as('register.show').use(middleware.guest())
 router.post('/register', [RegisterController, 'store']).as('register.store').use(middleware.guest())
-router.post('/logout', [LogoutController, 'handle']).as('logout').use(middleware.auth())
+router.post('/logout', [LogoutController, 'handle']).as('logout').use(middleware.auth({ guards: ['web'] }))
 
 router.get('/login', [LoginController, 'show']).as('login.show').use(middleware.guest())
 router.post('/login', [LoginController, 'store']).as('login.store').use(middleware.guest())

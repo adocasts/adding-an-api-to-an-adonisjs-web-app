@@ -62,6 +62,7 @@ declare module 'vue' {
     Input: typeof import('./inertia/components/ui/input/Input.vue')['default']
     Label: typeof import('./inertia/components/ui/label/Label.vue')['default']
     Navigation: typeof import('./inertia/components/Navigation.vue')['default']
+    OrganizationAccessTokensCard: typeof import('./inertia/components/OrganizationAccessTokensCard.vue')['default']
     OrganizationEditCard: typeof import('./inertia/components/OrganizationEditCard.vue')['default']
     OrganizationSelect: typeof import('./inertia/components/OrganizationSelect.vue')['default']
     OrganizationuserInvitesCard: typeof import('./inertia/components/OrganizationuserInvitesCard.vue')['default']

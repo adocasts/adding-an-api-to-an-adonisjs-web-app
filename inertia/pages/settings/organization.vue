@@ -30,5 +30,6 @@ defineProps<{
     <OrganizationEditCard v-if="can.organization.edit" :organization="organization" />
     <OrganizationUsersCard :user="user" :users="users" :roles="roles" :can="can" />
     <OrganizationUserInvitesCard :invites="invites" :roles="roles" :can="can" />
+    <OrganizationAccessTokensCard />
   </SettingsShell>
 </template>

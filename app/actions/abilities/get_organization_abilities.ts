@@ -8,6 +8,7 @@ export type OrganizationAbilities = {
   edit: boolean
   destroy: boolean
   manageUsers: boolean
+  manageAccessTokens: boolean
 }
 
 export default class GetOrganizationAbilities {
@@ -16,6 +17,7 @@ export default class GetOrganizationAbilities {
       edit: this.canEdit(roleId),
       destroy: this.canDestroy(roleId),
       manageUsers: this.canManageUsers(roleId),
+      manageAccessTokens: this.canManageAccessTokens(roleId),
     }
   }
 
@@ -28,6 +30,10 @@ export default class GetOrganizationAbilities {
   }
 
   static canManageUsers(roleId: number) {
+    return roleId === Roles.ADMIN
+  }
+
+  static canManageAccessTokens(roleId: number) {
     return roleId === Roles.ADMIN
   }
 }

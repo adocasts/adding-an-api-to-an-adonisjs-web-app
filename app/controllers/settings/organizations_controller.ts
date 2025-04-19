@@ -3,6 +3,8 @@ import GetOrganizationPendingInvites from '#actions/organizations/get_organizati
 import GetOrganizationUsers from '#actions/organizations/get_organization_users'
 import RemoveOrganizationUser from '#actions/organizations/remove_organization_user'
 import SendOrganizationInvite from '#actions/organizations/send_organization_invite'
+import StoreApiAccessToken from '#actions/settings/store_api_access_token'
+import AccessTokenDto from '#dtos/access_token'
 import OrganizationInviteDto from '#dtos/organization_invite'
 import RoleDto from '#dtos/role'
 import UserDto from '#dtos/user'
@@ -10,6 +12,7 @@ import ForbiddenException from '#exceptions/forbidden_exception'
 import Role from '#models/role'
 import { withOrganizationMetaData } from '#validators/helpers/organizations'
 import { organizationInviteValidator } from '#validators/organization'
+import { apiAccessTokenValidator } from '#validators/setting'
 import type { HttpContext } from '@adonisjs/core/http'
 import { setTimeout } from 'node:timers/promises'
 
@@ -84,5 +87,18 @@ export default class OrganizationsController {
     session.flash('success', 'member has been successfully removed')
 
     return response.redirect().back()
+  }
+
+  async storeAccessToken({ request, response, organization, can }: HttpContext) {
+    if (!can.organization.manageAccessTokens) {
+      throw new ForbiddenException('You are not authorized to create access tokens')
+    }
+
+    const data = await request.validateUsing(apiAccessTokenValidator)
+    const token = await StoreApiAccessToken.handle({ organization, data })
+
+    return response.json({
+      accessToken: new AccessTokenDto(token),
+    })
   }
 }

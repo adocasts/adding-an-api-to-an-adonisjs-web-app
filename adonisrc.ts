@@ -60,6 +60,7 @@ export default defineConfig({
     () => import('#start/kernel'),
     () => import('#start/routes/web'),
     () => import('#start/routes/auth'),
+    () => import('#start/routes/api'),
   ],
 
   /*

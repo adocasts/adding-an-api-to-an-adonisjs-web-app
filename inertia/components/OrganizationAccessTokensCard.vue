@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import AccessTokenDto from '#dtos/access_token'
 import TokenActions from '#enums/token_actions'
+import { router } from '@inertiajs/vue3'
 import axios from 'axios'
-import { Loader } from 'lucide-vue-next'
+import { Clipboard, ClipboardCheck, Loader } from 'lucide-vue-next'
 import { DateTime } from 'luxon'
 import { ref } from 'vue'
 
 defineProps<{ tokens: AccessTokenDto[] }>()
 
+let copyTimeout: NodeJS.Timeout | null = null
 const isDialogShown = ref(false)
 const processing = ref(false)
+const isCopied = ref(false)
+const token = ref<string | null>(null)
 const permissionOptions = Object.values(TokenActions)
 const form = ref({
   name: '',
@@ -24,7 +28,26 @@ async function onSubmit() {
     permissions: [...form.value.permissions],
   })
 
+  token.value = data.accessToken.token
+
   processing.value = false
+
+  router.reload({ only: ['accessTokens'] })
+}
+
+function onCopy() {
+  if (!token.value) return
+  if (copyTimeout) clearTimeout(copyTimeout)
+
+  navigator.clipboard.writeText(token.value)
+  isCopied.value = true
+
+  copyTimeout = setTimeout(() => (isCopied.value = false), 1_000)
+}
+
+function onClose() {
+  isDialogShown.value = false
+  token.value = null
 }
 </script>
 
@@ -75,7 +98,37 @@ async function onSubmit() {
   </Card>
 
   <Dialog v-model:open="isDialogShown">
-    <DialogContent>
+    <DialogContent v-if="token">
+      <DialogHeader>
+        <DialogTitle>Access Token Created</DialogTitle>
+      </DialogHeader>
+
+      <p>
+        Please copy your access token below and store it somewhere safe. Once this dialog is closed,
+        you will not be able to access your token again.
+      </p>
+
+      <div class="relative">
+        <Input type="text" :model-value="token" />
+        <Button
+          variant="outline"
+          size="icon"
+          class="absolute right-1 top-1 !w-8 !h-8 z-20 shadow-md"
+          @click="onCopy"
+        >
+          <ClipboardCheck v-if="isCopied" class="w-4 h-4 text-green-500" />
+          <Clipboard v-else class="w-4 h-4" />
+        </Button>
+        <div
+          class="absolute right-1 top-px w-32 h-[calc(100%-2px)] z-10 bg-gradient-to-r from-transparent to-white"
+        ></div>
+      </div>
+
+      <DialogFooter>
+        <Button type="button" @click="onClose"> Got my token! Close Dialog </Button>
+      </DialogFooter>
+    </DialogContent>
+    <DialogContent v-else>
       <DialogHeader>
         <DialogTitle>Add Access Token</DialogTitle>
       </DialogHeader>

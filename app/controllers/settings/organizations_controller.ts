@@ -3,6 +3,7 @@ import GetOrganizationPendingInvites from '#actions/organizations/get_organizati
 import GetOrganizationUsers from '#actions/organizations/get_organization_users'
 import RemoveOrganizationUser from '#actions/organizations/remove_organization_user'
 import SendOrganizationInvite from '#actions/organizations/send_organization_invite'
+import GetApiAccessTokens from '#actions/settings/get_api_access_tokens'
 import StoreApiAccessToken from '#actions/settings/store_api_access_token'
 import AccessTokenDto from '#dtos/access_token'
 import OrganizationInviteDto from '#dtos/organization_invite'
@@ -32,6 +33,10 @@ export default class OrganizationsController {
         const roles = await Role.query().orderBy('name')
         return RoleDto.fromArray(roles)
       },
+      accessTokens: async () => {
+        const accessTokens = await GetApiAccessTokens.handle({ organization })
+        return AccessTokenDto.fromArray(accessTokens)
+      }
     })
   }
 

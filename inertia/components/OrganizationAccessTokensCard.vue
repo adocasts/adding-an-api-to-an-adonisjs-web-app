@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import AccessTokenDto from '#dtos/access_token'
 import TokenActions from '#enums/token_actions'
 import axios from 'axios'
 import { Loader } from 'lucide-vue-next'
+import { DateTime } from 'luxon'
 import { ref } from 'vue'
+
+defineProps<{ tokens: AccessTokenDto[] }>()
 
 const isDialogShown = ref(false)
 const processing = ref(false)
@@ -31,6 +35,39 @@ async function onSubmit() {
       <CardDescription>Manage tokens your organization can use to access our API.</CardDescription>
     </CardHeader>
     <CardContent>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Permissions</TableHead>
+            <TableHead>Created</TableHead>
+            <TableHead>Last Used</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow v-for="item in tokens" :key="item.id">
+            <TableCell>
+              {{ item.name }}
+            </TableCell>
+            <TableCell class="capitalize">
+              {{ item.abilities.join(', ') }}
+            </TableCell>
+            <TableCell>
+              {{ DateTime.fromISO(item.createdAt).toLocaleString() }}
+            </TableCell>
+            <TableCell>
+              <span v-if="item.lastUsedAt">
+                {{ DateTime.fromISO(item.lastUsedAt).toLocaleString() }}
+              </span>
+            </TableCell>
+            <TableCell>
+              <!-- delete button -->
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+
       <div class="flex justify-end mt-4">
         <Button type="button" @click="isDialogShown = true"> Add Access Token </Button>
       </div>

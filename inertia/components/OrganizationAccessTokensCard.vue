@@ -3,9 +3,10 @@ import AccessTokenDto from '#dtos/access_token'
 import TokenActions from '#enums/token_actions'
 import { router } from '@inertiajs/vue3'
 import axios from 'axios'
-import { Clipboard, ClipboardCheck, Loader } from 'lucide-vue-next'
+import { Clipboard, ClipboardCheck, Loader, Trash2 } from 'lucide-vue-next'
 import { DateTime } from 'luxon'
 import { ref } from 'vue'
+import { useResourceActions } from '~/composables/resource_actions'
 
 defineProps<{ tokens: AccessTokenDto[] }>()
 
@@ -19,6 +20,8 @@ const form = ref({
   name: '',
   permissions: new Set(['read']),
 })
+
+const { destroy } = useResourceActions<AccessTokenDto>()({})
 
 async function onSubmit() {
   processing.value = true
@@ -85,7 +88,9 @@ function onClose() {
               </span>
             </TableCell>
             <TableCell>
-              <!-- delete button -->
+              <Button variant="destructive" size="xs" @click="destroy.open(item)">
+                <Trash2 class="w-3 h-3" />
+              </Button>
             </TableCell>
           </TableRow>
         </TableBody>
@@ -96,6 +101,15 @@ function onClose() {
       </div>
     </CardContent>
   </Card>
+
+  <ConfirmDestroyDialog
+    v-model:open="destroy.isOpen"
+    title="Delete Access Token?"
+    :action-href="`/settings/organization/access-tokens/${destroy.resource?.id}`"
+  >
+    Are you sure you'd like to delete your <strong>{{ destroy.resource?.name }}</strong> access
+    token? It will become immediately unusable and cannot be restored.
+  </ConfirmDestroyDialog>
 
   <Dialog v-model:open="isDialogShown">
     <DialogContent v-if="token">

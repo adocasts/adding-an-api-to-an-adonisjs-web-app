@@ -90,5 +90,6 @@ router.group(() => {
   router.delete('/settings/organization/invite/:id', [SettingsOrganizationsController, 'cancelInvite']).as('settings.organization.invite.cancel')
   router.delete('/settings/organization/user/:id', [SettingsOrganizationsController, 'removeUser']).as('settings.organization.user.remove')
   router.post('/settings/organization/access-tokens', [SettingsOrganizationsController, 'storeAccessToken']).as('settings.organization.access-tokens.store')
+  router.delete('/settings/organization/access-tokens/:id', [SettingsOrganizationsController, 'destroyAccessTokens']).as('settings.organization.access-tokens.destroy')
 
 }).use([middleware.auth({ guards: ['web'] }), middleware.organization()])

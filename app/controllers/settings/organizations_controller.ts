@@ -3,6 +3,7 @@ import GetOrganizationPendingInvites from '#actions/organizations/get_organizati
 import GetOrganizationUsers from '#actions/organizations/get_organization_users'
 import RemoveOrganizationUser from '#actions/organizations/remove_organization_user'
 import SendOrganizationInvite from '#actions/organizations/send_organization_invite'
+import DestroyApiAccessToken from '#actions/settings/destroy_api_access_token'
 import GetApiAccessTokens from '#actions/settings/get_api_access_tokens'
 import StoreApiAccessToken from '#actions/settings/store_api_access_token'
 import AccessTokenDto from '#dtos/access_token'
@@ -105,5 +106,17 @@ export default class OrganizationsController {
     return response.json({
       accessToken: new AccessTokenDto(token),
     })
+  }
+
+  async destroyAccessTokens({ params, response, organization, session, can }: HttpContext) {
+    if (!can.organization.manageAccessTokens) {
+      throw new ForbiddenException('You are not authorized to delete access tokens')
+    }
+
+    await DestroyApiAccessToken.handle({ organization, id: params.id })
+
+    session.flash('success', 'Access token was successfully deleted and can no longer be used')
+
+    return response.redirect().back()
   }
 }

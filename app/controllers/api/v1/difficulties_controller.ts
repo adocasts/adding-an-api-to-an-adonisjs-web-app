@@ -1,3 +1,5 @@
+import StoreDifficulty from '#actions/difficulties/store_difficulty'
+import { difficultyValidator } from '#validators/difficulty'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class DifficultiesController {
@@ -11,7 +13,12 @@ export default class DifficultiesController {
   /**
    * Handle form submission for the create action
    */
-  async store({ request }: HttpContext) {}
+  async store({ request, organization }: HttpContext) {
+    const data = await request.validateUsing(difficultyValidator)
+    const difficulty = await StoreDifficulty.handle({ organization, data })
+
+    return difficulty
+  }
 
   /**
    * Show individual record

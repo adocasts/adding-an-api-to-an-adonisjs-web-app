@@ -1,4 +1,5 @@
 import StoreDifficulty from '#actions/difficulties/store_difficulty'
+import UpdateDifficulty from '#actions/difficulties/update_difficulty'
 import { difficultyValidator } from '#validators/difficulty'
 import type { HttpContext } from '@adonisjs/core/http'
 
@@ -32,7 +33,16 @@ export default class DifficultiesController {
   /**
    * Handle form submission for the edit action
    */
-  async update({ params, request }: HttpContext) {}
+  async update({ params, request, organization }: HttpContext) {
+    const data = await request.validateUsing(difficultyValidator)
+    const difficulty = await UpdateDifficulty.handle({ 
+      id: params.id, 
+      organization, 
+      data 
+    })
+
+    return difficulty
+  }
 
   /**
    * Delete record

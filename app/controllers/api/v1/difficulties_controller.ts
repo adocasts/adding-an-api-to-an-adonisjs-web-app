@@ -23,7 +23,11 @@ export default class DifficultiesController {
   /**
    * Show individual record
    */
-  async show({ params }: HttpContext) {}
+  async show({ params, organization }: HttpContext) {
+    return organization.related('difficulties').query()
+      .where({ id: params.id })
+      .firstOrFail()
+  }
 
   /**
    * Handle form submission for the edit action

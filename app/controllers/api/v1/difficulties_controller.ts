@@ -1,3 +1,4 @@
+import AuthorizeToken from '#actions/abilities/authorize_token'
 import DestroyDifficulty from '#actions/difficulties/destroy_difficulty'
 import StoreDifficulty from '#actions/difficulties/store_difficulty'
 import UpdateDifficulty from '#actions/difficulties/update_difficulty'
@@ -10,6 +11,7 @@ export default class DifficultiesController {
    * Display a list of resource
    */
   async index({ organization }: HttpContext) {
+    AuthorizeToken.read(organization)
     return organization.related('difficulties').query().orderBy('order')
   }
 
@@ -17,6 +19,8 @@ export default class DifficultiesController {
    * Handle form submission for the create action
    */
   async store({ request, organization }: HttpContext) {
+    AuthorizeToken.create(organization)
+
     const data = await request.validateUsing(difficultyValidator)
     const difficulty = await StoreDifficulty.handle({ organization, data })
 
@@ -27,6 +31,7 @@ export default class DifficultiesController {
    * Show individual record
    */
   async show({ params, organization }: HttpContext) {
+    AuthorizeToken.read(organization)
     return organization.related('difficulties').query()
       .where({ id: params.id })
       .firstOrFail()
@@ -36,6 +41,8 @@ export default class DifficultiesController {
    * Handle form submission for the edit action
    */
   async update({ params, request, organization }: HttpContext) {
+    AuthorizeToken.update(organization)
+
     const data = await request.validateUsing(difficultyValidator)
     const difficulty = await UpdateDifficulty.handle({ 
       id: params.id, 
@@ -50,6 +57,8 @@ export default class DifficultiesController {
    * Delete record
    */
   async destroy({ request, response, params, organization }: HttpContext) {
+    AuthorizeToken.delete(organization)
+    
     const data = await request.validateUsing(difficultyDestroyValidator, withOrganizationMetaData(organization.id))
 
     await DestroyDifficulty.handle({ 

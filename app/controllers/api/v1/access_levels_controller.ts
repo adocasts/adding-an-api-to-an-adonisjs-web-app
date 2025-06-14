@@ -1,3 +1,4 @@
+import AuthorizeToken from '#actions/abilities/authorize_token'
 import DestroyAccessLevel from '#actions/access_levels/destroy_access_level'
 import StoreAccessLevel from '#actions/access_levels/store_access_level'
 import UpdateAccessLevel from '#actions/access_levels/update_access_level'
@@ -10,6 +11,7 @@ export default class AccessLevelsController {
    * Display a list of resource
    */
   async index({ organization }: HttpContext) {
+    AuthorizeToken.read(organization)
     return organization.related('accessLevels').query().orderBy('order')
   }
 
@@ -17,6 +19,8 @@ export default class AccessLevelsController {
    * Handle form submission for the create action
    */
   async store({ request, organization }: HttpContext) {
+    AuthorizeToken.create(organization)
+
     const data = await request.validateUsing(accessLevelValidator)
     const accessLevel = await StoreAccessLevel.handle({ organization, data })
 
@@ -27,6 +31,7 @@ export default class AccessLevelsController {
    * Show individual record
    */
   async show({ params, organization  }: HttpContext) {
+    AuthorizeToken.read(organization)
     return organization.related('accessLevels').query()
       .where({ id: params.id })
       .firstOrFail()
@@ -36,6 +41,8 @@ export default class AccessLevelsController {
    * Handle form submission for the edit action
    */
   async update({ params, request, organization }: HttpContext) {
+    AuthorizeToken.update(organization)
+
     const data = await request.validateUsing(accessLevelValidator)
     const accessLevel = await UpdateAccessLevel.handle({ 
       id: params.id,
@@ -50,6 +57,8 @@ export default class AccessLevelsController {
    * Delete record
    */
   async destroy({ params, request, response, organization }: HttpContext) {
+    AuthorizeToken.delete(organization)
+    
     const data = await request.validateUsing(accessLevelDestroyValidator, withOrganizationMetaData(organization.id))
 
     await DestroyAccessLevel.handle({

@@ -2,16 +2,19 @@ import AuthorizeToken from '#actions/abilities/authorize_token'
 import DestroyCourse from '#actions/courses/destroy_course'
 import StoreCourse from '#actions/courses/store_course'
 import UpdateCourse from '#actions/courses/update_course'
-import { courseValidator } from '#validators/course'
+import { coursePaginateValidator, courseValidator } from '#validators/course'
 import { withOrganizationMetaData } from '#validators/helpers/organizations'
 import type { HttpContext } from '@adonisjs/core/http'
+import router from '@adonisjs/core/services/router'
 
 export default class CoursesController {
   /**
    * Display a list of resource
    */
-  async index({ organization }: HttpContext) {
+  async index({ request, organization }: HttpContext) {
     AuthorizeToken.read(organization)
+
+    const { page = 1, perPage = 5 } = await request.validateUsing(coursePaginateValidator)
 
     const courses = await organization
       .related('courses')
@@ -22,6 +25,9 @@ export default class CoursesController {
       .withCount('modules')
       .withCount('lessons')
       .orderBy('order')
+      .paginate(page, perPage)
+
+    courses.baseUrl(router.makeUrl('api.v1.courses.index'))
 
     return courses
   }

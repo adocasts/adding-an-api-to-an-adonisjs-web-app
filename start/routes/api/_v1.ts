@@ -13,7 +13,7 @@ router.group(() => {
   router.resource('access-levels', AccessLevelsController).apiOnly()
   router.resource('statuses', StatusesController).apiOnly()
   router.resource('courses', CoursesController).apiOnly()
-}).prefix('/api/v1').as('api').use([
+}).prefix('/api/v1').as('api.v1').use([
   middleware.forceJsonResponse(),
   middleware.auth({ guards: ['api'] }),
   middleware.organization()

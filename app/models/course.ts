@@ -10,6 +10,8 @@ import { compose } from '@adonisjs/core/helpers'
 import { WithOrganization } from './mixins/with_organization.js'
 
 export default class Course extends compose(BaseModel, WithOrganization) {
+  serializeExtras = true
+
   @column({ isPrimary: true })
   declare id: number
 

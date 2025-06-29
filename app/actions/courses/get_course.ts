@@ -1,4 +1,4 @@
-import Course from '#models/course'
+import GetModules from '#actions/modules/get_modules'
 import Organization from '#models/organization'
 
 type Params = {
@@ -18,19 +18,11 @@ export default class GetCourse {
       .where({ id })
       .firstOrFail()
 
-    const modules = await this.#getModules(course)
+    const modules = await GetModules.handle({ 
+      courseId: id,
+      organization, 
+    })
 
     return { course, modules }
-  }
-
-  static async #getModules(course: Course) {
-    return course
-      .related('modules')
-      .query()
-      .preload('status')
-      .preload('lessons', (query) =>
-        query.preload('accessLevel').preload('status').orderBy('order')
-      )
-      .orderBy('order')
   }
 }

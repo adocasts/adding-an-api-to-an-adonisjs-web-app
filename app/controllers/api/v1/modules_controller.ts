@@ -1,5 +1,6 @@
 import AuthorizeToken from '#actions/abilities/authorize_token'
 import DestroyModule from '#actions/modules/destroy_module'
+import GetModules from '#actions/modules/get_modules'
 import StoreModule from '#actions/modules/store_module'
 import UpdateModule from '#actions/modules/update_module'
 import UpdateModuleTag from '#actions/modules/update_module_tag'
@@ -11,7 +12,14 @@ export default class ModulesController {
   /**
    * Display a list of resource
    */
-  async index({}: HttpContext) {}
+  async index({ params, organization }: HttpContext) {
+    AuthorizeToken.read(organization)
+
+    return GetModules.handle({
+      courseId: params.course_id,
+      organization
+    })
+  }
 
   /**
    * Handle form submission for the create action
@@ -27,11 +35,6 @@ export default class ModulesController {
       data
     })
   }
-
-  /**
-   * Show individual record
-   */
-  async show({ params }: HttpContext) {}
 
   /**
    * Handle form submission for the edit action

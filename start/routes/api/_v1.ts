@@ -14,7 +14,7 @@ router.group(() => {
   router.resource('access-levels', AccessLevelsController).apiOnly()
   router.resource('statuses', StatusesController).apiOnly()
   router.resource('courses', CoursesController).apiOnly()
-  router.resource('courses.modules', ModulesController).apiOnly()
+  router.resource('courses.modules', ModulesController).apiOnly().except(['show'])
 
   router.patch('/courses/:id/tag', [CoursesController, 'tag']).as('courses.tag')
   router.patch('/courses/:course_id/modules/:id/tag', [ModulesController, 'tag']).as('courses.modules.tag')

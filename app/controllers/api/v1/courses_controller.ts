@@ -1,5 +1,6 @@
 import AuthorizeToken from '#actions/abilities/authorize_token'
 import DestroyCourse from '#actions/courses/destroy_course'
+import GetCourse from '#actions/courses/get_course'
 import StoreCourse from '#actions/courses/store_course'
 import UpdateCourse from '#actions/courses/update_course'
 import { coursePaginateValidator, courseValidator } from '#validators/course'
@@ -47,7 +48,14 @@ export default class CoursesController {
   /**
    * Show individual record
    */
-  async show({ params }: HttpContext) {}
+  async show({ params, organization }: HttpContext) {
+    AuthorizeToken.read(organization)
+    
+    return GetCourse.handle({ 
+      id: params.id,
+      organization
+    })
+  }
 
   /**
    * Handle form submission for the edit action

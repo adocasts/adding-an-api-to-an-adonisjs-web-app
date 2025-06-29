@@ -3,7 +3,8 @@ import DestroyCourse from '#actions/courses/destroy_course'
 import GetCourse from '#actions/courses/get_course'
 import StoreCourse from '#actions/courses/store_course'
 import UpdateCourse from '#actions/courses/update_course'
-import { coursePaginateValidator, courseValidator } from '#validators/course'
+import UpdateCourseTag from '#actions/courses/update_course_tag'
+import { coursePaginateValidator, coursePatchTagValidator, courseValidator } from '#validators/course'
 import { withOrganizationMetaData } from '#validators/helpers/organizations'
 import type { HttpContext } from '@adonisjs/core/http'
 import router from '@adonisjs/core/services/router'
@@ -71,6 +72,18 @@ export default class CoursesController {
     })
 
     return course
+  }
+
+  async tag({ params, request, organization }: HttpContext) {
+    AuthorizeToken.update(organization)
+
+    const data = await request.validateUsing(coursePatchTagValidator, withOrganizationMetaData(organization.id))
+
+    return UpdateCourseTag.handle({
+      id: params.id,
+      data,
+      organization
+    })
   }
 
   /**

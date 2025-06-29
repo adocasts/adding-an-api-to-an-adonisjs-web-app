@@ -13,6 +13,8 @@ router.group(() => {
   router.resource('access-levels', AccessLevelsController).apiOnly()
   router.resource('statuses', StatusesController).apiOnly()
   router.resource('courses', CoursesController).apiOnly()
+
+  router.patch('/courses/:id/tag', [CoursesController, 'tag']).as('courses.tag')
 }).prefix('/api/v1').as('api.v1').use([
   middleware.forceJsonResponse(),
   middleware.auth({ guards: ['api'] }),

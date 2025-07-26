@@ -4,7 +4,11 @@ import GetCourse from '#actions/courses/get_course'
 import StoreCourse from '#actions/courses/store_course'
 import UpdateCourse from '#actions/courses/update_course'
 import UpdateCourseTag from '#actions/courses/update_course_tag'
-import { coursePaginateValidator, coursePatchTagValidator, courseValidator } from '#validators/course'
+import {
+  coursePaginateValidator,
+  coursePatchTagValidator,
+  courseValidator,
+} from '#validators/course'
 import { withOrganizationMetaData } from '#validators/helpers/organizations'
 import type { HttpContext } from '@adonisjs/core/http'
 import router from '@adonisjs/core/services/router'
@@ -40,7 +44,10 @@ export default class CoursesController {
   async store({ request, organization }: HttpContext) {
     AuthorizeToken.create(organization)
 
-    const data = await request.validateUsing(courseValidator, withOrganizationMetaData(organization.id))
+    const data = await request.validateUsing(
+      courseValidator,
+      withOrganizationMetaData(organization.id)
+    )
     const course = await StoreCourse.handle({ organization, data })
 
     return course
@@ -51,10 +58,10 @@ export default class CoursesController {
    */
   async show({ params, organization }: HttpContext) {
     AuthorizeToken.read(organization)
-    
-    return GetCourse.handle({ 
+
+    return GetCourse.handle({
       id: params.id,
-      organization
+      organization,
     })
   }
 
@@ -64,11 +71,14 @@ export default class CoursesController {
   async update({ params, request, organization }: HttpContext) {
     AuthorizeToken.update(organization)
 
-    const data = await request.validateUsing(courseValidator, withOrganizationMetaData(organization.id))
+    const data = await request.validateUsing(
+      courseValidator,
+      withOrganizationMetaData(organization.id)
+    )
     const course = await UpdateCourse.handle({
       id: params.id,
       organization,
-      data
+      data,
     })
 
     return course
@@ -77,12 +87,15 @@ export default class CoursesController {
   async tag({ params, request, organization }: HttpContext) {
     AuthorizeToken.update(organization)
 
-    const data = await request.validateUsing(coursePatchTagValidator, withOrganizationMetaData(organization.id))
+    const data = await request.validateUsing(
+      coursePatchTagValidator,
+      withOrganizationMetaData(organization.id)
+    )
 
     return UpdateCourseTag.handle({
       id: params.id,
       data,
-      organization
+      organization,
     })
   }
 

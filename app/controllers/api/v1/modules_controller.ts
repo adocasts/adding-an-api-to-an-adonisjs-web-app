@@ -17,7 +17,7 @@ export default class ModulesController {
 
     return GetModules.handle({
       courseId: params.course_id,
-      organization
+      organization,
     })
   }
 
@@ -27,12 +27,15 @@ export default class ModulesController {
   async store({ request, params, organization }: HttpContext) {
     AuthorizeToken.create(organization)
 
-    const data = await request.validateUsing(moduleValidator, withOrganizationMetaData(organization.id))
+    const data = await request.validateUsing(
+      moduleValidator,
+      withOrganizationMetaData(organization.id)
+    )
 
     return StoreModule.handle({
       courseId: params.course_id,
       organization,
-      data
+      data,
     })
   }
 
@@ -42,24 +45,30 @@ export default class ModulesController {
   async update({ params, request, organization }: HttpContext) {
     AuthorizeToken.update(organization)
 
-    const data = await request.validateUsing(moduleValidator, withOrganizationMetaData(organization.id))
+    const data = await request.validateUsing(
+      moduleValidator,
+      withOrganizationMetaData(organization.id)
+    )
 
     return UpdateModule.handle({
       id: params.id,
       organization,
-      data
+      data,
     })
   }
 
   async tag({ params, request, organization }: HttpContext) {
     AuthorizeToken.update(organization)
 
-    const data = await request.validateUsing(modulePatchTagValidator, withOrganizationMetaData(organization.id))
+    const data = await request.validateUsing(
+      modulePatchTagValidator,
+      withOrganizationMetaData(organization.id)
+    )
 
     return UpdateModuleTag.handle({
       id: params.id,
       organization,
-      data
+      data,
     })
   }
 
@@ -72,7 +81,7 @@ export default class ModulesController {
     await DestroyModule.handle({
       id: params.id,
       courseId: params.course_id,
-      organization
+      organization,
     })
 
     return response.status(204)

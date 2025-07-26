@@ -2,7 +2,6 @@ import AuthorizeToken from '#actions/abilities/authorize_token'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class OrganizationsController {
-  
   async handle({ organization }: HttpContext) {
     AuthorizeToken.read(organization)
 
@@ -12,5 +11,4 @@ export default class OrganizationsController {
 
     return organization
   }
-  
 }

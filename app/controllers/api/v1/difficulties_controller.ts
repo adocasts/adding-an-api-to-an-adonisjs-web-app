@@ -32,9 +32,7 @@ export default class DifficultiesController {
    */
   async show({ params, organization }: HttpContext) {
     AuthorizeToken.read(organization)
-    return organization.related('difficulties').query()
-      .where({ id: params.id })
-      .firstOrFail()
+    return organization.related('difficulties').query().where({ id: params.id }).firstOrFail()
   }
 
   /**
@@ -44,10 +42,10 @@ export default class DifficultiesController {
     AuthorizeToken.update(organization)
 
     const data = await request.validateUsing(difficultyValidator)
-    const difficulty = await UpdateDifficulty.handle({ 
-      id: params.id, 
-      organization, 
-      data 
+    const difficulty = await UpdateDifficulty.handle({
+      id: params.id,
+      organization,
+      data,
     })
 
     return difficulty
@@ -58,13 +56,16 @@ export default class DifficultiesController {
    */
   async destroy({ request, response, params, organization }: HttpContext) {
     AuthorizeToken.delete(organization)
-    
-    const data = await request.validateUsing(difficultyDestroyValidator, withOrganizationMetaData(organization.id))
 
-    await DestroyDifficulty.handle({ 
+    const data = await request.validateUsing(
+      difficultyDestroyValidator,
+      withOrganizationMetaData(organization.id)
+    )
+
+    await DestroyDifficulty.handle({
       id: params.id,
       organization,
-      data
+      data,
     })
 
     return response.status(204)

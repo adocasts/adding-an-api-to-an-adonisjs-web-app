@@ -30,11 +30,9 @@ export default class AccessLevelsController {
   /**
    * Show individual record
    */
-  async show({ params, organization  }: HttpContext) {
+  async show({ params, organization }: HttpContext) {
     AuthorizeToken.read(organization)
-    return organization.related('accessLevels').query()
-      .where({ id: params.id })
-      .firstOrFail()
+    return organization.related('accessLevels').query().where({ id: params.id }).firstOrFail()
   }
 
   /**
@@ -44,10 +42,10 @@ export default class AccessLevelsController {
     AuthorizeToken.update(organization)
 
     const data = await request.validateUsing(accessLevelValidator)
-    const accessLevel = await UpdateAccessLevel.handle({ 
+    const accessLevel = await UpdateAccessLevel.handle({
       id: params.id,
       organization,
-      data
+      data,
     })
 
     return accessLevel
@@ -58,13 +56,16 @@ export default class AccessLevelsController {
    */
   async destroy({ params, request, response, organization }: HttpContext) {
     AuthorizeToken.delete(organization)
-    
-    const data = await request.validateUsing(accessLevelDestroyValidator, withOrganizationMetaData(organization.id))
+
+    const data = await request.validateUsing(
+      accessLevelDestroyValidator,
+      withOrganizationMetaData(organization.id)
+    )
 
     await DestroyAccessLevel.handle({
       id: params.id,
       organization,
-      data
+      data,
     })
 
     return response.status(204)

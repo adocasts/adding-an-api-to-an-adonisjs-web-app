@@ -19,11 +19,14 @@ export default class LessonsController {
   async store({ request, organization }: HttpContext) {
     AuthorizeToken.create(organization)
 
-    const data = await request.validateUsing(lessonValidator, withOrganizationMetaData(organization.id))
+    const data = await request.validateUsing(
+      lessonValidator,
+      withOrganizationMetaData(organization.id)
+    )
 
     return StoreLesson.handle({
       organization,
-      data
+      data,
     })
   }
 
@@ -33,24 +36,30 @@ export default class LessonsController {
   async update({ params, request, organization }: HttpContext) {
     AuthorizeToken.update(organization)
 
-    const data = await request.validateUsing(lessonValidator, withOrganizationMetaData(organization.id))
+    const data = await request.validateUsing(
+      lessonValidator,
+      withOrganizationMetaData(organization.id)
+    )
 
     return UpdateLesson.handle({
       id: params.id,
       organization,
-      data
+      data,
     })
   }
 
   async tag({ params, request, organization }: HttpContext) {
     AuthorizeToken.update(organization)
 
-    const data = await request.validateUsing(lessonPatchTagValidator, withOrganizationMetaData(organization.id))
+    const data = await request.validateUsing(
+      lessonPatchTagValidator,
+      withOrganizationMetaData(organization.id)
+    )
 
     return UpdateLessonTag.handle({
       id: params.id,
       organization,
-      data
+      data,
     })
   }
 
@@ -62,7 +71,7 @@ export default class LessonsController {
 
     await DestroyLesson.handle({
       id: params.id,
-      organization
+      organization,
     })
 
     return response.status(204)

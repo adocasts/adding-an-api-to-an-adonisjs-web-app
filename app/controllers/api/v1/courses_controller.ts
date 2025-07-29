@@ -7,6 +7,7 @@ import UpdateCourseTag from '#actions/courses/update_course_tag'
 import {
   coursePaginateValidator,
   coursePatchTagValidator,
+  courseSearchValidator,
   courseValidator,
 } from '#validators/course'
 import { withOrganizationMetaData } from '#validators/helpers/organizations'
@@ -34,6 +35,31 @@ export default class CoursesController {
       .paginate(page, perPage)
 
     courses.baseUrl(router.makeUrl('api.v1.courses.index'))
+
+    return courses
+  }
+
+  async search({ request, organization }: HttpContext) {
+    AuthorizeToken.read(organization)
+
+    const { page = 1, perPage = 5, ...filters } = await request.validateUsing(courseSearchValidator)
+
+    const courses = await organization
+      .related('courses')
+      .query()
+      .if(filters.name, (query) => query.whereILike('name', filters.name!))
+      .if(filters.statusId, (query) => query.where('statusId', filters.statusId!))
+      .if(filters.difficultyId, (query) => query.where('difficultyId', filters.difficultyId!))
+      .if(filters.accessLevelId, (query) => query.where('accessLevelId', filters.accessLevelId!))
+      .preload('status')
+      .preload('difficulty')
+      .preload('accessLevel')
+      .withCount('modules')
+      .withCount('lessons')
+      .orderBy('order')
+      .paginate(page, perPage)
+
+    courses.baseUrl(router.makeUrl('api.v1.search.courses'))
 
     return courses
   }

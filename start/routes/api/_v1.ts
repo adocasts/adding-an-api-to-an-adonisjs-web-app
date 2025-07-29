@@ -17,7 +17,11 @@ router
     router.resource('statuses', StatusesController).apiOnly()
     router.resource('courses', CoursesController).apiOnly()
     router.resource('courses.modules', ModulesController).apiOnly().except(['show'])
-    router.resource('lessons', LessonsController).apiOnly().except(['show'])
+    router.resource('lessons', LessonsController).apiOnly().except(['index', 'show'])
+
+    router
+      .get('/modules/:module_id/lessons', [LessonsController, 'module'])
+      .as('modules.lessons.index')
 
     router.patch('/courses/:id/tag', [CoursesController, 'tag']).as('courses.tag')
     router

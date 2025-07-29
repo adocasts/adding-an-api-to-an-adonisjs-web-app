@@ -1,5 +1,6 @@
 import AuthorizeToken from '#actions/abilities/authorize_token'
 import DestroyLesson from '#actions/lessons/destroy_lesson'
+import GetLessonsByModule from '#actions/lessons/get_lessons_by_module'
 import StoreLesson from '#actions/lessons/store_lesson'
 import UpdateLesson from '#actions/lessons/update_lesson'
 import UpdateLessonTag from '#actions/lessons/update_lesson_tag'
@@ -11,7 +12,11 @@ export default class LessonsController {
   /**
    * Display a list of resource
    */
-  async index({}: HttpContext) {}
+  async module({ params, organization }: HttpContext) {
+    AuthorizeToken.read(organization)
+
+    return GetLessonsByModule.handle({ organization, moduleId: params.module_id })
+  }
 
   /**
    * Handle form submission for the create action

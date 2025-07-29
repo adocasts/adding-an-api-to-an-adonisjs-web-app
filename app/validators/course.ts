@@ -1,5 +1,6 @@
 import vine from '@vinejs/vine'
 import { existsInOrganization, OrganizationMetaData } from './helpers/organizations.js'
+import StringFilter from '../filters/string_filter.js'
 
 export const coursePaginateValidator = vine.compile(
   vine.object({
@@ -12,7 +13,7 @@ export const courseSearchValidator = vine.compile(
   vine.object({
     page: vine.number().positive().optional(),
     perPage: vine.number().min(5).max(50).optional(),
-    name: vine.string().optional(),
+    name: StringFilter.rule,
     statusId: vine.number().optional(),
     difficultyId: vine.number().optional(),
     accessLevelId: vine.number().optional(),

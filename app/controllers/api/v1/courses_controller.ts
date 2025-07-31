@@ -1,7 +1,6 @@
 import AuthorizeToken from '#actions/abilities/authorize_token'
 import DestroyCourse from '#actions/courses/destroy_course'
 import GetCourse from '#actions/courses/get_course'
-import SearchCourses from '#actions/courses/search_courses'
 import StoreCourse from '#actions/courses/store_course'
 import UpdateCourse from '#actions/courses/update_course'
 import UpdateCourseTag from '#actions/courses/update_course_tag'
@@ -43,8 +42,22 @@ export default class CoursesController {
   async search({ request, organization }: HttpContext) {
     AuthorizeToken.read(organization)
 
-    const data = await request.validateUsing(courseSearchValidator)
-    const courses = await SearchCourses.handle({ organization, data })
+    const { page = 1, perPage = 5, ...filters } = await request.validateUsing(courseSearchValidator)
+
+    const courses = await organization
+      .related('courses')
+      .query()
+      .if(filters.name, (query) => query.whereILike('name', filters.name!))
+      .if(filters.statusId, (query) => query.where('statusId', filters.statusId!))
+      .if(filters.difficultyId, (query) => query.where('difficultyId', filters.difficultyId!))
+      .if(filters.accessLevelId, (query) => query.where('accessLevelId', filters.accessLevelId!))
+      .preload('status')
+      .preload('difficulty')
+      .preload('accessLevel')
+      .withCount('modules')
+      .withCount('lessons')
+      .orderBy('order')
+      .paginate(page, perPage)
 
     courses.baseUrl(router.makeUrl('api.v1.search.courses'))
 

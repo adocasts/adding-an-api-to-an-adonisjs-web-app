@@ -22,18 +22,8 @@ export default class CoursesController {
   async index({ request, organization }: HttpContext) {
     AuthorizeToken.read(organization)
 
-    const { page = 1, perPage = 5 } = await request.validateUsing(coursePaginateValidator)
-
-    const courses = await organization
-      .related('courses')
-      .query()
-      .preload('status')
-      .preload('difficulty')
-      .preload('accessLevel')
-      .withCount('modules')
-      .withCount('lessons')
-      .orderBy('order')
-      .paginate(page, perPage)
+    const { page, perPage } = await request.validateUsing(coursePaginateValidator)
+    const courses = await SearchCourses.handle({ organization, page, perPage })
 
     courses.baseUrl(router.makeUrl('api.v1.courses.index'))
 
@@ -43,8 +33,8 @@ export default class CoursesController {
   async search({ request, organization }: HttpContext) {
     AuthorizeToken.read(organization)
 
-    const filters = await request.validateUsing(courseSearchValidator)
-    const courses = await SearchCourses.handle({ organization, filters })
+    const { page, perPage, ...filters } = await request.validateUsing(courseSearchValidator)
+    const courses = await SearchCourses.handle({ organization, filters, page, perPage })
 
     courses.baseUrl(router.makeUrl('api.v1.search.courses'))
 

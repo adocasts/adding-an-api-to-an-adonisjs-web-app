@@ -7,25 +7,28 @@ import StringFilter from '../../filters/string_filter.js'
 import NumberFilter from '../../filters/number_filter.js'
 
 type Query = HasManyQueryBuilderContract<typeof Course, Course>
-type Filters = Infer<typeof courseSearchValidator>
+type Data = Infer<typeof courseSearchValidator>
+type Filters = Omit<Data, 'page' | 'perPage'>
 type Params = {
   organization: Organization
-  filters: Filters
+  filters?: Filters
+  page?: number
+  perPage?: number
 }
 
 export default class SearchCourses {
-  static async handle({ organization, filters }: Params) {
+  static async handle({ organization, filters, page = 1, perPage = 5 }: Params) {
     return organization
       .related('courses')
       .query()
-      .if(filters, (query) => this.#applyFilters(query, filters))
+      .if(filters, (query) => this.#applyFilters(query, filters!))
       .preload('status')
       .preload('difficulty')
       .preload('accessLevel')
       .withCount('modules')
       .withCount('lessons')
       .orderBy('order')
-      .paginate(filters.page ?? 1, filters.perPage ?? 5)
+      .paginate(page, perPage)
   }
 
   static #applyFilters(query: Query, filters: Filters) {

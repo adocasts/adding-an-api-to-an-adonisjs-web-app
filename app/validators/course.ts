@@ -8,6 +8,17 @@ export const coursePaginateValidator = vine.compile(
   })
 )
 
+export const courseSearchValidator = vine.compile(
+  vine.object({
+    page: vine.number().positive().optional(),
+    perPage: vine.number().min(5).max(50).optional(),
+    name: vine.string().optional(),
+    statusId: vine.number().optional(),
+    difficultyId: vine.number().optional(),
+    accessLevelId: vine.number().optional(),
+  })
+)
+
 export const courseValidator = vine.withMetaData<OrganizationMetaData>().compile(
   vine.object({
     name: vine.string().maxLength(150),

@@ -28,6 +28,8 @@ router
       .patch('/courses/:course_id/modules/:id/tag', [ModulesController, 'tag'])
       .as('courses.modules.tag')
     router.patch('/lessons/:id/tag', [LessonsController, 'tag']).as('lessons.tag')
+
+    router.post('/search/courses', [CoursesController, 'search']).as('search.courses')
   })
   .prefix('/api/v1')
   .as('api.v1')

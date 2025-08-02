@@ -4,6 +4,7 @@ import { courseSearchValidator } from '#validators/course'
 import { HasManyQueryBuilderContract } from '@adonisjs/lucid/types/relations'
 import { Infer } from '@vinejs/vine/types'
 import StringFilter from '../../filters/string_filter.js'
+import NumberFilter from '../../filters/number_filter.js'
 
 type Query = HasManyQueryBuilderContract<typeof Course, Course>
 type Filters = Infer<typeof courseSearchValidator>
@@ -29,8 +30,8 @@ export default class SearchCourses {
 
   static #applyFilters(query: Query, filters: Filters) {
     StringFilter.build(query, 'name', filters.name)
-    query.if(filters.statusId, (q) => q.where('statusId', filters.statusId!))
-    query.if(filters.difficultyId, (q) => q.where('difficultyId', filters.difficultyId!))
-    query.if(filters.accessLevelId, (q) => q.where('accessLevelId', filters.accessLevelId!))
+    NumberFilter.build(query, 'statusId', filters.statusId)
+    NumberFilter.build(query, 'difficultyId', filters.difficultyId)
+    NumberFilter.build(query, 'accessLevelId', filters.accessLevelId)
   }
 }

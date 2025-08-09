@@ -1,14 +1,27 @@
 import AuthorizeToken from '#actions/abilities/authorize_token'
 import DestroyLesson from '#actions/lessons/destroy_lesson'
 import GetLessonsByModule from '#actions/lessons/get_lessons_by_module'
+import SearchLessons from '#actions/lessons/search_lessons'
 import StoreLesson from '#actions/lessons/store_lesson'
 import UpdateLesson from '#actions/lessons/update_lesson'
 import UpdateLessonTag from '#actions/lessons/update_lesson_tag'
 import { withOrganizationMetaData } from '#validators/helpers/organizations'
-import { lessonPatchTagValidator, lessonValidator } from '#validators/lesson'
+import { lessonPatchTagValidator, lessonSearchValidator, lessonValidator } from '#validators/lesson'
 import type { HttpContext } from '@adonisjs/core/http'
+import router from '@adonisjs/core/services/router'
 
 export default class LessonsController {
+  async search({ request, organization }: HttpContext) {
+    AuthorizeToken.read(organization)
+
+    const { page, perPage, ...filters } = await request.validateUsing(lessonSearchValidator)
+    const lessons = await SearchLessons.handle({ organization, filters, page, perPage })
+
+    lessons.baseUrl(router.makeUrl('api.v1.search.lessons'))
+
+    return lessons
+  }
+
   /**
    * Display a list of resource
    */

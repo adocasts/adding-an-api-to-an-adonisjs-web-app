@@ -1,6 +1,19 @@
 import vine from '@vinejs/vine'
 import { existsInOrganization, OrganizationMetaData } from './helpers/organizations.js'
 import { DateTime } from 'luxon'
+import StringFilter from '../filters/string_filter.js'
+import NumberFilter from '../filters/number_filter.js'
+
+export const lessonSearchValidator = vine.compile(
+  vine.object({
+    page: vine.number().positive().optional(),
+    perPage: vine.number().range([1, 5]).optional(),
+    name: StringFilter.rule,
+    accessLevelId: NumberFilter.rule,
+    statusId: NumberFilter.rule,
+    moduleId: NumberFilter.rule,
+  })
+)
 
 export const lessonValidator = vine.withMetaData<OrganizationMetaData>().compile(
   vine.object({

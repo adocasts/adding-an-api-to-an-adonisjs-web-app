@@ -30,6 +30,7 @@ router
     router.patch('/lessons/:id/tag', [LessonsController, 'tag']).as('lessons.tag')
 
     router.post('/search/courses', [CoursesController, 'search']).as('search.courses')
+    router.post('/search/lessons', [LessonsController, 'search']).as('search.lessons')
   })
   .prefix('/api/v1')
   .as('api.v1')

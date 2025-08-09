@@ -45,5 +45,5 @@ export default class Lesson extends compose(BaseModel, WithOrganization) {
   declare status: BelongsTo<typeof Status>
 
   @belongsTo(() => Module)
-  declare modules: BelongsTo<typeof Module>
+  declare module: BelongsTo<typeof Module>
 }

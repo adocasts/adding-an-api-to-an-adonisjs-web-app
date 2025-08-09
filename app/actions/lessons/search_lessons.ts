@@ -22,9 +22,6 @@ export default class SearchLessons {
       .related('lessons')
       .query()
       .if(filters, (query) => this.#applyFilters(query, filters!))
-      .preload('accessLevel')
-      .preload('status')
-      .preload('module', (query) => query.preload('course'))
       .orderBy([
         { column: 'publishAt', order: 'desc', nulls: 'last' },
         { column: 'updatedAt', order: 'desc', nulls: 'last' },
@@ -38,7 +35,25 @@ export default class SearchLessons {
     NumberFilter.build(query, 'accessLevelId', filters.accessLevelId)
     NumberFilter.build(query, 'moduleId', filters.moduleId)
 
+    this.#applyPreloads(query, filters)
     this.#applyPublishAtFilter(query, filters)
+  }
+
+  static #applyPreloads(query: Query, { relationships }: Pick<Filters, 'relationships'>) {
+    if (!relationships?.length) return
+
+    for (const relationship of relationships) {
+      switch (relationship) {
+        case 'status':
+        case 'accessLevel':
+        case 'module':
+          query.preload(relationship)
+          break
+        case 'module.course':
+          query.preload('module', (module) => module.preload('course'))
+          break
+      }
+    }
   }
 
   static #applyPublishAtFilter(query: Query, { publishAt }: Pick<Filters, 'publishAt'>) {

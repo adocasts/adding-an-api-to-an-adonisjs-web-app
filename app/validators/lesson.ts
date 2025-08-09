@@ -18,6 +18,9 @@ export const lessonSearchValidator = vine.compile(
         after: vine.date({ formats: { utc: true } }).optional(),
       })
       .optional(),
+    relationships: vine
+      .array(vine.enum(['status', 'accessLevel', 'module', 'module.course']))
+      .optional(),
   })
 )
 

@@ -12,6 +12,12 @@ export const lessonSearchValidator = vine.compile(
     accessLevelId: NumberFilter.rule,
     statusId: NumberFilter.rule,
     moduleId: NumberFilter.rule,
+    publishAt: vine
+      .object({
+        before: vine.date({ formats: { utc: true } }).optional(),
+        after: vine.date({ formats: { utc: true } }).optional(),
+      })
+      .optional(),
   })
 )
 

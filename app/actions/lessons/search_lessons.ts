@@ -37,5 +37,19 @@ export default class SearchLessons {
     NumberFilter.build(query, 'statusId', filters.statusId)
     NumberFilter.build(query, 'accessLevelId', filters.accessLevelId)
     NumberFilter.build(query, 'moduleId', filters.moduleId)
+
+    this.#applyPublishAtFilter(query, filters)
+  }
+
+  static #applyPublishAtFilter(query: Query, { publishAt }: Pick<Filters, 'publishAt'>) {
+    if (!publishAt) return
+
+    if (publishAt?.after && publishAt.before) {
+      query.whereNotNull('publishAt').whereBetween('publishAt', [publishAt.after, publishAt.before])
+    } else if (publishAt.after) {
+      query.whereNotNull('publishAt').where('publishAt', '>', publishAt.after)
+    } else if (publishAt.before) {
+      query.whereNotNull('publishAt').where('publishAt', '<', publishAt.before)
+    }
   }
 }

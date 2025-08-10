@@ -6,6 +6,7 @@ const ModulesController = () => import('#controllers/api/v1/modules_controller')
 const OrganizationsController = () => import('#controllers/api/v1/organizations_controller')
 const StatusesController = () => import('#controllers/api/v1/statuses_controller')
 import { middleware } from '#start/kernel'
+import { apiSearchThrottle, apiThrottle, throttle } from '#start/limiter'
 import router from '@adonisjs/core/services/router'
 
 router
@@ -29,8 +30,14 @@ router
       .as('courses.modules.tag')
     router.patch('/lessons/:id/tag', [LessonsController, 'tag']).as('lessons.tag')
 
-    router.post('/search/courses', [CoursesController, 'search']).as('search.courses')
-    router.post('/search/lessons', [LessonsController, 'search']).as('search.lessons')
+    router
+      .post('/search/courses', [CoursesController, 'search'])
+      .as('search.courses')
+      .use(apiSearchThrottle)
+    router
+      .post('/search/lessons', [LessonsController, 'search'])
+      .as('search.lessons')
+      .use(apiSearchThrottle)
   })
   .prefix('/api/v1')
   .as('api.v1')
@@ -38,4 +45,5 @@ router
     middleware.forceJsonResponse(),
     middleware.auth({ guards: ['api'] }),
     middleware.organization(),
+    apiThrottle,
   ])
